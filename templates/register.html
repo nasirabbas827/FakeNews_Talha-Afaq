@@ -1,0 +1,175 @@
+{% extends 'base.html' %}
+
+{% block title %}Join TruthGuard AI | Secure Registration{% endblock title %}
+
+{% block css %}
+{{ block.super }}
+<style>
+    .auth-card {
+        background: white;
+        border-radius: 24px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+        overflow: hidden;
+        border: none;
+        margin-top: 2rem;
+    }
+
+    .auth-info-pane {
+        background: var(--primary-gradient);
+        color: white;
+        padding: 4rem 3rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .auth-form-pane {
+        padding: 4rem 3rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: #64748b;
+        margin-bottom: 0.5rem;
+        text-transform: uppercase;
+    }
+
+    .form-control {
+        border: 2px solid #f1f5f9;
+        border-radius: 12px;
+        padding: 0.75rem 1rem;
+        transition: all 0.3s;
+    }
+
+    .form-control:focus {
+        border-color: var(--accent-color);
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        background: white;
+    }
+
+    .btn-register {
+        background: var(--primary-gradient);
+        color: white;
+        border: none;
+        padding: 1rem;
+        border-radius: 12px;
+        font-weight: 700;
+        width: 100%;
+        margin-top: 1.5rem;
+        transition: transform 0.2s;
+    }
+
+    .btn-register:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+        color: white;
+    }
+
+    .feature-list {
+        list-style: none;
+        padding: 0;
+        margin-top: 2rem;
+    }
+
+    .feature-list li {
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        font-size: 0.95rem;
+        opacity: 0.9;
+    }
+
+    .feature-list i {
+        margin-right: 15px;
+        color: #60a5fa;
+    }
+</style>
+{% endblock css %}
+
+{% block content %}
+<div class="container mb-5">
+    <div class="row auth-card g-0">
+        <div class="col-lg-5 auth-info-pane d-none d-lg-flex">
+            <h2 class="fw-bold mb-3">Combat Misinformation with AI.</h2>
+            <p class="opacity-75">Join our community of researchers and media professionals using Natural Language Processing to verify the truth.</p>
+            
+            <ul class="feature-list">
+                <li><i class="fas fa-check-circle"></i> Analyze headlines with 94%+ accuracy</li>
+                <li><i class="fas fa-check-circle"></i> Access public fake news datasets</li>
+                <li><i class="fas fa-check-circle"></i> Generate detailed PDF reports</li>
+                <li><i class="fas fa-check-circle"></i> Real-time linguistic pattern scanning</li>
+            </ul>
+
+            <div class="mt-auto">
+                <p class="small opacity-50 mb-0">Powered by Nano Banana & Veo Models</p>
+            </div>
+        </div>
+
+        <div class="col-lg-7 auth-form-pane">
+            <div class="mb-4">
+                <h3 class="fw-bold text-dark">Create Account</h3>
+                <p class="text-muted">Already have an account? <a href="{% url 'user_login' %}" class="text-primary text-decoration-none fw-bold">Login here</a></p>
+            </div>
+
+            {% if form.errors %}
+                <div class="alert alert-danger border-0 rounded-3 small">
+                    <i class="fas fa-exclamation-triangle me-2"></i> Please correct the errors below.
+                </div>
+            {% endif %}
+
+            <form method="post" action="{% url 'user_register' %}">
+                {% csrf_token %}
+                
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <label class="form-label">{{ form.username.label }}</label>
+                        {{ form.username }}
+                        {% if form.username.errors %}<div class="text-danger small mt-1">{{ form.username.errors.0 }}</div>{% endif %}
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">{{ form.first_name.label }}</label>
+                        {{ form.first_name }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">{{ form.last_name.label }}</label>
+                        {{ form.last_name }}
+                    </div>
+
+                    <div class="col-md-12 mb-3">
+                        <label class="form-label">{{ form.email.label }}</label>
+                        {{ form.email }}
+                        {% if form.email.errors %}<div class="text-danger small mt-1">{{ form.email.errors.0 }}</div>{% endif %}
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Password</label>
+                        {{ form.password1 }}
+                        {% if form.password1.errors %}<div class="text-danger small mt-1">{{ form.password1.errors.0 }}</div>{% endif %}
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <label class="form-label">Confirm Password</label>
+                        {{ form.password2 }}
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-register">
+                    CREATE ANALYST ACCOUNT <i class="fas fa-arrow-right ms-2"></i>
+                </button>
+                
+                <p class="text-center text-muted small mt-4">
+                    By registering, you agree to our <a href="#" class="text-decoration-none">Terms of Service</a> and <a href="#" class="text-decoration-none">Data Privacy Policy</a>.
+                </p>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Add Bootstrap classes to Django form fields automatically
+    document.querySelectorAll('input').forEach(input => {
+        input.classList.add('form-control');
+    });
+</script>
+{% endblock content %}

@@ -1,0 +1,179 @@
+{% extends 'base.html' %}
+
+{% block title %}Analyze News | TruthGuard AI Intelligence{% endblock title %}
+
+{% block css %}
+{{ block.super }}
+<style>
+    .submit-container {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+        overflow: hidden;
+        margin-top: -20px;
+    }
+
+    .form-section {
+        padding: 3rem;
+    }
+
+    .info-section {
+        background: #f8fafc;
+        padding: 3rem;
+        border-left: 1px solid #e2e8f0;
+    }
+
+    /* Styling Django Form Fields */
+    .form-section p {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-section label {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: var(--text-main);
+        display: block;
+    }
+
+    .form-section input[type="text"], 
+    .form-section textarea {
+        width: 100%;
+        padding: 12px 15px;
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        transition: all 0.3s;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .form-section input:focus, 
+    .form-section textarea:focus {
+        border-color: var(--accent-color);
+        outline: none;
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+    }
+
+    .analyze-btn {
+        background: var(--primary-gradient);
+        color: white;
+        border: none;
+        padding: 15px 30px;
+        border-radius: 10px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        width: 100%;
+        transition: transform 0.2s;
+    }
+
+    .analyze-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(37, 99, 235, 0.3);
+    }
+
+    .nlp-step {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 1.5rem;
+    }
+
+    .step-icon {
+        width: 40px;
+        height: 40px;
+        background: white;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--accent-color);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        flex-shrink: 0;
+    }
+</style>
+{% endblock css %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row submit-container">
+        <div class="col-lg-7 form-section">
+            <h2 class="fw-bold mb-4">
+                <i class="fas fa-microscope text-primary me-2"></i>New Analysis
+            </h2>
+            <p class="text-muted mb-4">Paste the headline or full body of the news article below. Our NLP engine will analyze linguistic patterns, sentiment, and metadata to verify authenticity.</p>
+            
+            <form method="POST" id="analysisForm">
+                {% csrf_token %}
+                
+                {% for field in form %}
+                <div class="mb-3">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.help_text %}
+                        <small class="text-muted">{{ field.help_text }}</small>
+                    {% endif %}
+                    {% for error in field.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                {% endfor %}
+
+                <button type="submit" class="analyze-btn mt-3" onclick="showLoader()">
+                    <span id="btnText">RUN AI CLASSIFICATION</span>
+                    <span id="btnLoader" class="d-none">
+                        <i class="fas fa-spinner fa-spin me-2"></i>ANALYZING PATTERNS...
+                    </span>
+                </button>
+            </form>
+        </div>
+
+        <div class="col-lg-5 info-section">
+            <h4 class="fw-bold mb-4">How it works</h4>
+            
+            <div class="nlp-step">
+                <div class="step-icon"><i class="fas fa-language"></i></div>
+                <div>
+                    <h6 class="fw-bold mb-1">Preprocessing</h6>
+                    <p class="small text-muted">Removing stop-words, tokenizing text, and lemmatization to isolate core meanings.</p>
+                </div>
+            </div>
+
+            <div class="nlp-step">
+                <div class="step-icon"><i class="fas fa-project-diagram"></i></div>
+                <div>
+                    <h6 class="fw-bold mb-1">Vectorization</h6>
+                    <p class="small text-muted">Converting text into numerical data using TF-IDF or Word Embeddings for the ML model.</p>
+                </div>
+            </div>
+
+            <div class="nlp-step">
+                <div class="step-icon"><i class="fas fa-brain"></i></div>
+                <div>
+                    <h6 class="fw-bold mb-1">Neural Classification</h6>
+                    <p class="small text-muted">Scanning for sensationalism, logical inconsistencies, and biased language patterns.</p>
+                </div>
+            </div>
+
+            <div class="mt-4 p-3 bg-white rounded-3 border">
+                <p class="small mb-0 text-center text-muted">
+                    <i class="fas fa-shield-check text-success me-1"></i> 
+                    Your data is encrypted and used only for analysis.
+                </p>
+            </div>
+            
+            
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block scripts %}
+<script>
+    function showLoader() {
+        // Simple UI feedback when user clicks submit
+        const btnText = document.getElementById('btnText');
+        const btnLoader = document.getElementById('btnLoader');
+        
+        // This is just for visual effect before the page reloads
+        btnText.classList.add('d-none');
+        btnLoader.classList.remove('d-none');
+    }
+</script>
+{% endblock scripts %}

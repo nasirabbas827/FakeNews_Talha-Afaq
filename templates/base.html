@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}TruthGuard AI | Fake News Detection{% endblock %}</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.95);
+            --primary-gradient: linear-gradient(135deg, #0f172a 0%, #1e40af 100%);
+            --accent-color: #3b82f6;
+            --success-green: #10b981;
+            --fake-red: #ef4444;
+            --text-main: #0f172a;
+            --bg-body: #f1f5f9;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        h1, h2, h3, .navbar-brand {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        /* Modern Glassmorphism Navbar */
+        .navbar {
+            background: var(--primary-gradient);
+            backdrop-filter: blur(10px);
+            padding: 1.2rem 0;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            letter-spacing: -1px;
+            font-size: 1.6rem;
+        }
+
+        .nav-link {
+            font-weight: 500;
+            margin: 0 5px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-link:hover {
+            background: rgba(255,255,255,0.1);
+            color: #fff !important;
+        }
+
+        /* Card Styling */
+        .card {
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+            overflow: hidden;
+            background: #ffffff;
+        }
+
+        /* Real/Fake Indicator highlights */
+        .status-pill {
+            padding: 5px 15px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .btn-modern {
+            padding: 10px 25px;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        /* Footer */
+        footer {
+            background: #0f172a;
+            color: #94a3b8;
+            padding: 4rem 0 2rem;
+            margin-top: auto;
+        }
+
+        .footer-logo {
+            color: white;
+            font-weight: 700;
+            font-size: 1.4rem;
+        }
+
+        /* Animation */
+        .fade-in {
+            animation: fadeIn 0.6s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+    
+    {% block css %}{% endblock %}
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="/"> 
+                <i class="fas fa-microchip text-info me-2"></i>TRUTHGUARD<span class="text-info">.AI</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'dashboard' %}"><i class="fas fa-th-large me-1"></i> Dashboard</a>
+                        </li>
+                        
+                        {% if user.is_staff %}
+                        <li class="nav-item">
+                            <a class="nav-link text-warning" href="/admin"><i class="fas fa-user-shield me-1"></i> Admin Panel</a>
+                        </li>
+                        {% endif %}
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'submit_news' %}"><i class="fas fa-search-check me-1"></i> Analyze News</a>
+                        </li>
+                        
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle bg-light text-dark px-3 ms-2" href="#" id="userDrop" data-bs-toggle="dropdown">
+                                <i class="fas fa-user-circle me-1"></i> {{ user.username }}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end border-0 shadow">
+                                <li><a class="dropdown-item" href="{% url 'user_profile' %}">My Profile</a></li>
+                                <li><a class="dropdown-item" href="#">Analysis History</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="{% url 'logout' %}">Logout</a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'user_login' %}">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link btn btn-info text-dark ms-lg-3 px-4" href="{% url 'user_register' %}">Get Started</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    {% if messages %}
+    <div class="container mt-4">
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show border-0 shadow-sm" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <main class="container my-5 fade-in">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <div class="footer-logo mb-3">
+                        <i class="fas fa-shield-virus me-2"></i>TruthGuard AI
+                    </div>
+                    <p>Leveraging Natural Language Processing and Machine Learning to combat the spread of digital misinformation.</p>
+                </div>
+                <div class="col-lg-2 offset-lg-2">
+                    <h6 class="text-white fw-bold mb-3">System</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-decoration-none text-muted">Analysis Engine</a></li>
+                        <li><a href="#" class="text-decoration-none text-muted">Datasets</a></li>
+                        <li><a href="#" class="text-decoration-none text-muted">API Docs</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-4 text-lg-end">
+                    <h6 class="text-white fw-bold mb-3">Connect With Us</h6>
+                    <div class="fs-4">
+                        <a href="#" class="text-muted me-3"><i class="fab fa-github"></i></a>
+                        <a href="#" class="text-muted me-3"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-muted"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                    <p class="mt-4 small">&copy; 2026 Fake News Detection AI. Verified Technology.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

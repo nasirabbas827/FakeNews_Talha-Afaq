@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Available Testing Datasets | Dashboard
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Available Testing Datasets</h2>
+
+    {% if datasets %}
+        <div class="card shadow-sm">
+            <div class="card-body table-responsive">
+                <table class="table table-striped table-bordered align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>#</th>
+                            <th>Dataset Name</th>
+                            <th>Uploaded By</th>
+                            <th>Uploaded At</th>
+                            <th>Dataset File</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for dataset in datasets %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ dataset.dataset_name }}</td>
+                            <td>
+                                {% if dataset.uploaded_by %}
+                                    {{ dataset.uploaded_by.username }}
+                                {% else %}
+                                    System
+                                {% endif %}
+                            </td>
+                            <td>{{ dataset.uploaded_at|date:"Y-m-d H:i" }}</td>
+                            <td>
+                                {% if dataset.dataset_file %}
+                                    <a href="{{ dataset.dataset_file.url }}" target="_blank">
+                                        {{ dataset.dataset_file.name|slice:"9:" }}
+                                    </a>
+                                {% else %}
+                                    <span class="text-muted">No File</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            No datasets available.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

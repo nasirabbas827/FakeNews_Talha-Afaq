@@ -145,7 +145,12 @@
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end border-0 shadow">
                                 <li><a class="dropdown-item" href="{% url 'user_profile' %}">My Profile</a></li>
-                                <li><a class="dropdown-item" href="#">Analysis History</a></li>
+                                <li><a class="dropdown-item" href="{% url 'analysis_history' %}">Analysis History</a></li>
+                                <li>
+    <a class="dropdown-item" href="{% url 'dataset_list' %}">
+        Testing Datasets
+    </a>
+</li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item text-danger" href="{% url 'logout' %}">Logout</a></li>
                             </ul>

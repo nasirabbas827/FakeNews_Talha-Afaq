@@ -7,7 +7,6 @@ AI Intelligence Dashboard | TruthGuard AI
 {% block css %}
 {{ block.super }}
 <style>
-    /* Modern Dashboard Styling */
     .dashboard-header {
         background: var(--primary-gradient);
         color: white;
@@ -88,49 +87,82 @@ AI Intelligence Dashboard | TruthGuard AI
         letter-spacing: 1px;
         padding: 5px 12px;
     }
+
+    .chart-container {
+        background: white;
+        border-radius: 16px;
+        padding: 2rem;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        text-align: center;
+        margin-bottom: 3rem;
+    }
 </style>
 {% endblock css %}
 
 {% block content %}
 <div class="container">
+
+    <!-- HEADER -->
     <div class="dashboard-header text-center">
         <h1 class="display-5 fw-bold mb-2">AI Analysis Command Center</h1>
-        <p class="lead opacity-75">Real-time misinformation detection and linguistic pattern analysis.</p>
+        <p class="lead opacity-75">
+            Real-time misinformation detection and linguistic pattern analysis.
+        </p>
         <div class="mt-4">
             <a href="{% url 'submit_news' %}" class="btn btn-info btn-lg px-4 fw-bold">
-                <i class="fas fa-plus-circle me-2"></i>Analyze New Article
+                Analyze New Article
             </a>
         </div>
     </div>
 
-    <div class="row stats-container">
+    <!-- STATS -->
+    <div class="row stats-container mt-3">
         <div class="col-md-4">
             <div class="stats-card text-center">
                 <div class="text-muted small fw-bold mb-1">TOTAL ANALYZED</div>
-                <h2 class="fw-bold mb-0">1,284</h2>
-                <div class="text-success small mt-2"><i class="fas fa-caret-up"></i> 12% this week</div>
+                <h2 class="fw-bold mb-0">{{ total_count }}</h2>
+                <div class="text-success small mt-2">
+                    Personal analysis history
+                </div>
             </div>
         </div>
+
         <div class="col-md-4">
             <div class="stats-card text-center">
                 <div class="text-muted small fw-bold mb-1">MODEL ACCURACY</div>
-                <h2 class="fw-bold mb-0">94.2%</h2>
-                <div class="text-primary small mt-2">NLP Transformer v2.1</div>
+                <h2 class="fw-bold mb-0">{{ model_accuracy }}%</h2>
+<div class="text-primary small mt-2">
+    Precision: {{ model_precision }}% |
+    Recall: {{ model_recall }}% |
+    F1: {{ model_f1 }}%
+</div>
             </div>
         </div>
+
         <div class="col-md-4">
             <div class="stats-card text-center">
                 <div class="text-muted small fw-bold mb-1">SYSTEM STATUS</div>
                 <h2 class="fw-bold text-success mb-0">Active</h2>
-                <div class="text-muted small mt-2">Nodes operational</div>
+                <div class="text-muted small mt-2">
+                    AI model operational
+                </div>
             </div>
         </div>
     </div>
 
+    <!-- CHART SECTION -->
+    {% if chart %}
+    <div class="chart-container">
+        <h4 class="fw-bold mb-3">Prediction Overview</h4>
+        <img src="data:image/png;base64,{{ chart }}" class="img-fluid" alt="Prediction Chart">
+    </div>
+    {% endif %}
+
+    <!-- RECENT REPORTS -->
     <div class="row mb-4">
         <div class="col-12">
             <h3 class="section-title">
-                <i class="fas fa-stream text-primary"></i> Recent Intelligence Reports
+                Recent Intelligence Reports
             </h3>
         </div>
     </div>
@@ -138,88 +170,122 @@ AI Intelligence Dashboard | TruthGuard AI
     <div class="row g-4">
         {% for article in recent_news %}
         <div class="col-md-6">
-            <div class="card analysis-card h-100 shadow-sm p-4 {% if article.analysis.prediction == 'Real' %}real{% elif article.analysis.prediction == 'Fake' %}fake{% endif %}">
+            <div class="card analysis-card h-100 shadow-sm p-4 
+                {% if article.analysis.prediction == 'Real' %}real
+                {% elif article.analysis.prediction == 'Fake' %}fake{% endif %}">
+
                 <div class="d-flex justify-content-between align-items-start mb-3">
-                    <h5 class="fw-bold mb-0 text-dark">{{ article.title|default:"Untitled Analysis" }}</h5>
+                    <h5 class="fw-bold mb-0 text-dark">
+                        {{ article.title|default:"Untitled Analysis" }}
+                    </h5>
+
                     {% if article.analysis %}
-                        <span class="badge badge-prediction rounded-pill {% if article.analysis.prediction == 'Real' %}bg-success{% else %}bg-danger{% endif %}">
-                            {{ article.analysis.prediction }}
-                        </span>
+                    <span class="badge badge-prediction rounded-pill 
+                        {% if article.analysis.prediction == 'Real' %}
+                        bg-success
+                        {% else %}
+                        bg-danger
+                        {% endif %}">
+                        {{ article.analysis.prediction }}
+                    </span>
                     {% endif %}
                 </div>
-                
-                <p class="text-muted">{{ article.content|truncatechars:120 }}</p>
+
+                <p class="text-muted">
+                    {{ article.content|truncatechars:150 }}
+                </p>
 
                 {% if article.analysis %}
                 <div class="mt-auto">
                     <div class="d-flex justify-content-between small mb-1">
                         <span>AI Confidence Score</span>
-                        <span class="fw-bold">{{ article.analysis.confidence_score }}%</span>
+                        <span class="fw-bold">
+                            {{ article.analysis.confidence_score }}%
+                        </span>
                     </div>
                     <div class="confidence-bar">
-                        <div class="confidence-fill" style="width: {{ article.analysis.confidence_score }}%"></div>
+                        <div class="confidence-fill"
+                             style="width: {{ article.analysis.confidence_score }}%">
+                        </div>
                     </div>
                 </div>
                 {% else %}
                 <div class="mt-auto py-2">
-                    <span class="badge bg-secondary opacity-50"><i class="fas fa-spinner fa-spin me-1"></i> Processing NLP...</span>
+                    <span class="badge bg-secondary opacity-50">
+                        Processing NLP...
+                    </span>
                 </div>
                 {% endif %}
-                
+
                 <hr class="my-3 opacity-25">
+
                 <div class="d-flex justify-content-between align-items-center">
                     <span class="small text-muted">
-                        <i class="far fa-user me-1"></i> {{ article.user.username }}
+                        {{ article.user.username }}
                     </span>
                     <span class="small text-muted">
-                        <i class="far fa-calendar-alt me-1"></i> {{ article.submitted_at|date:"M d, Y" }}
+                        {{ article.submitted_at|date:"M d, Y" }}
                     </span>
                 </div>
+
             </div>
         </div>
         {% empty %}
         <div class="col-12">
             <div class="text-center py-5 bg-white rounded-3 shadow-sm">
-                <i class="fas fa-folder-open fa-3x text-light mb-3"></i>
-                <p class="text-muted">No news articles have been analyzed yet.</p>
-                <a href="{% url 'submit_news' %}" class="btn btn-outline-primary btn-sm">Start First Analysis</a>
+                <p class="text-muted">
+                    No news articles have been analyzed yet.
+                </p>
+                <a href="{% url 'submit_news' %}" 
+                   class="btn btn-outline-primary btn-sm">
+                    Start First Analysis
+                </a>
             </div>
         </div>
         {% endfor %}
     </div>
 
+    <!-- EXPORT SECTION -->
     <div class="row mt-5">
         <div class="col-12">
             <div class="card bg-dark text-white p-4">
                 <div class="row align-items-center">
                     <div class="col-md-8">
                         <h4 class="mb-1">Generate Intelligence Report</h4>
-                        <p class="mb-0 opacity-75">Export all classification history into PDF or Excel formats for research.</p>
+                        <p class="mb-0 opacity-75">
+                            Export your classification history into PDF or Excel format.
+                        </p>
                     </div>
                     <div class="col-md-4 text-md-end mt-3 mt-md-0">
-                        <button class="btn btn-light"><i class="fas fa-file-export me-2"></i>Export Results</button>
+                        <a href="{% url 'export_excel' %}" 
+                           class="btn btn-light me-2">
+                            Export Excel
+                        </a>
+                        <a href="{% url 'export_pdf' %}" 
+                           class="btn btn-outline-light">
+                            Export PDF
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
+</div>
 {% endblock content %}
 
 {% block scripts %}
 <script>
-    // Animations for confidence bars
-    document.addEventListener('DOMContentLoaded', function() {
-        const fills = document.querySelectorAll('.confidence-fill');
-        fills.forEach(fill => {
-            const width = fill.style.width;
-            fill.style.width = '0%';
-            setTimeout(() => {
-                fill.style.transition = 'width 1s ease-out';
-                fill.style.width = width;
-            }, 300);
-        });
+document.addEventListener('DOMContentLoaded', function() {
+    const fills = document.querySelectorAll('.confidence-fill');
+    fills.forEach(fill => {
+        const width = fill.style.width;
+        fill.style.width = '0%';
+        setTimeout(() => {
+            fill.style.transition = 'width 1s ease-out';
+            fill.style.width = width;
+        }, 300);
     });
+});
 </script>
 {% endblock scripts %}

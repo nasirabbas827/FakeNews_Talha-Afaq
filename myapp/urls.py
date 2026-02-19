@@ -9,6 +9,10 @@ urlpatterns = [
     path('register/', views.register_view, name='user_register'),
     path('login/', views.login_view, name='user_login'),
     path('logout/', views.logout_view, name='logout'),
+    path('export/excel/', views.export_excel, name='export_excel'),
+    path('export/pdf/', views.export_pdf, name='export_pdf'),
+    path('analysis/history/', views.analysis_history, name='analysis_history'),
+    path('datasets/', views.dataset_list, name='dataset_list'),
 
     # Password Reset
     path('password_reset/', auth_views.PasswordResetView.as_view(), name='password_reset'),

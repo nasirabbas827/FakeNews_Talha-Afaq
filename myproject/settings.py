@@ -145,3 +145,9 @@ GOOGLE_REDIRECT_URI = 'http://localhost:8000/oauth2callback/'
 
 
 STATIC_URL = 'static/'
+import os
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
